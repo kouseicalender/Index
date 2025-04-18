@@ -1,118 +1,165 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>アプリ一覧ビューア</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>アプリまとめビューア</title>
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f2f4f8;
-      margin: 0;
-      padding: 40px 20px;
-      color: #333;
+      font-family: sans-serif;
+      margin: 2rem;
+      background: #f9f9f9;
     }
-
     h1 {
-      text-align: center;
-      color: #1d3557;
-      font-weight: 600;
-      margin-bottom: 40px;
+      margin-bottom: 1rem;
     }
-
-    .app-container {
-      max-width: 1000px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      padding: 24px;
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
-
+    input {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
     table {
-      width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
     }
-
     th, td {
-      padding: 14px 16px;
-      border-bottom: 1px solid #e0e0e0;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
       text-align: left;
     }
-
     th {
-      background-color: #f8f9fa;
-      color: #2f3e4d;
-      font-weight: 600;
+      cursor: pointer;
+      background: #eee;
     }
-
-    tr:hover {
-      background-color: #f5f7fa;
+    img.qr {
+      height: 60px;
     }
-
-    a {
-      color: #1d72b8;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
+    .actions button {
+      margin-right: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <h1>公開アプリ一覧</h1>
-  <div class="app-container">
-    <table>
-      <thead>
-        <tr>
-          <th>アプリ名</th>
-          <th>説明</th>
-          <th>リンク</th>
-          <th>作成日</th>
-          <th>更新日</th>
-        </tr>
-      </thead>
-      <tbody id="appListBody">
-        <tr><td colspan="5">読み込み中...</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <h1>アプリ一覧</h1>
+  <form id="appForm">
+    <input type="text" placeholder="アプリ名" id="name" required>
+    <input type="text" placeholder="説明" id="desc">
+    <input type="url" placeholder="URL" id="url" required>
+    <input type="date" id="created">
+    <input type="date" id="updated">
+    <input type="text" placeholder="QRコード画像ファイル名（省略可）" id="qr">
+    <button type="submit">追加</button>
+  </form>
+
+  <table id="appTable">
+    <thead>
+      <tr>
+        <th data-key="name">名前</th>
+        <th data-key="desc">説明</th>
+        <th data-key="url">URL</th>
+        <th data-key="created">作成日</th>
+        <th data-key="updated">更新日</th>
+        <th>QR</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
-    fetch('apps.json')
-      .then(response => {
-        if (!response.ok) throw new Error('読み込み失敗');
-        return response.json();
-      })
-      .then(data => {
-        const tbody = document.getElementById('appListBody');
-        tbody.innerHTML = '';
+    const form = document.getElementById("appForm");
+    const table = document.querySelector("#appTable tbody");
+    let data = JSON.parse(localStorage.getItem("apps") || "[]");
+    let sortKey = null;
+    let sortAsc = true;
 
-        if (!data || data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5">登録されたアプリはありません。</td></tr>';
-          return;
-        }
+    function save() {
+      localStorage.setItem("apps", JSON.stringify(data));
+    }
 
-        data.sort((a, b) => (b.updated || '').localeCompare(a.updated || ''));
-
-        data.forEach(app => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${app.name}</td>
-            <td>${app.description}</td>
-            <td><a href="${app.link}" target="_blank">開く</a></td>
-            <td>${app.created}</td>
-            <td>${app.updated}</td>
-          `;
-          tbody.appendChild(row);
-        });
-      })
-      .catch(err => {
-        document.getElementById('appListBody').innerHTML = `<tr><td colspan="5">エラーが発生しました: ${err.message}</td></tr>`;
+    function render() {
+      table.innerHTML = "";
+      data.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.name}</td>
+          <td>${row.desc}</td>
+          <td><a href="${row.url}" target="_blank">リンク</a></td>
+          <td>${row.created || ""}</td>
+          <td>${row.updated || ""}</td>
+          <td>${row.qr ? `<img class="qr" src="./${row.qr}" alt="QR">` : ""}</td>
+          <td class="actions">
+            <button onclick="edit(${i})">編集</button>
+            <button onclick="remove(${i})">削除</button>
+          </td>
+        `;
+        table.appendChild(tr);
       });
+    }
+
+    form.onsubmit = e => {
+      e.preventDefault();
+      const item = {
+        name: form.name.value,
+        desc: form.desc.value,
+        url: form.url.value,
+        created: form.created.value,
+        updated: form.updated.value,
+        qr: form.qr.value,
+      };
+      data.push(item);
+      save();
+      render();
+      form.reset();
+    };
+
+    function edit(i) {
+      const item = data[i];
+      form.name.value = item.name;
+      form.desc.value = item.desc;
+      form.url.value = item.url;
+      form.created.value = item.created;
+      form.updated.value = item.updated;
+      form.qr.value = item.qr;
+      data.splice(i, 1);
+      save();
+      render();
+    }
+
+    function remove(i) {
+      if (confirm("削除しますか？")) {
+        data.splice(i, 1);
+        save();
+        render();
+      }
+    }
+
+    document.querySelectorAll("th[data-key]").forEach(th => {
+      th.onclick = () => {
+        const key = th.dataset.key;
+        sortAsc = key === sortKey ? !sortAsc : true;
+        sortKey = key;
+        data.sort((a, b) => {
+          if (a[key] < b[key]) return sortAsc ? -1 : 1;
+          if (a[key] > b[key]) return sortAsc ? 1 : -1;
+          return 0;
+        });
+        render();
+      };
+    });
+
+    render();
   </script>
 </body>
 </html>
