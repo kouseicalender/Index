@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>アプリ管理ダッシュボード</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #2c3e50;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      max-width: 600px;
+      margin: 0 auto 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea {
+      padding: 10px;
+      font-size: 14px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f2f5;
+      cursor: pointer;
+    }
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+    .action-buttons button {
+      margin-right: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>アプリ管理ダッシュボード</h1>
+  <form id="appForm">
+    <label>アプリ名:</label>
+    <input type="text" id="appName" required />
+
+    <label>説明:</label>
+    <textarea id="appDescription" required></textarea>
+
+    <label>リンクURL:</label>
+    <input type="url" id="appLink" required />
+
+    <label>作成日:</label>
+    <input type="date" id="createdDate" />
+
+    <label>更新日:</label>
+    <input type="date" id="updatedDate" />
+
+    <button type="submit">登録</button>
+  </form>
+
+  <table id="appTable">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">アプリ名</th>
+        <th onclick="sortTable(1)">説明</th>
+        <th>リンク</th>
+        <th onclick="sortTable(3)">作成日</th>
+        <th onclick="sortTable(4)">更新日</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody id="appTableBody"></tbody>
+  </table>
+
+  <script>
+    const appForm = document.getElementById('appForm');
+    const appTableBody = document.getElementById('appTableBody');
+    let appData = JSON.parse(localStorage.getItem('appList') || '[]');
+
+    function renderTable() {
+      appTableBody.innerHTML = '';
+      appData.forEach((app, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${app.name}</td>
+          <td>${app.description}</td>
+          <td><a href="${app.link}" target="_blank">開く</a></td>
+          <td>${app.created}</td>
+          <td>${app.updated}</td>
+          <td class="action-buttons">
+            <button onclick="editApp(${index})">編集</button>
+            <button onclick="deleteApp(${index})">削除</button>
+          </td>
+        `;
+        appTableBody.appendChild(row);
+      });
+    }
+
+    appForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const app = {
+        name: document.getElementById('appName').value,
+        description: document.getElementById('appDescription').value,
+        link: document.getElementById('appLink').value,
+        created: document.getElementById('createdDate').value || new Date().toISOString().split('T')[0],
+        updated: document.getElementById('updatedDate').value || new Date().toISOString().split('T')[0]
+      };
+      appData.push(app);
+      localStorage.setItem('appList', JSON.stringify(appData));
+      appForm.reset();
+      renderTable();
+    });
+
+    function deleteApp(index) {
+      if (confirm('本当に削除しますか？')) {
+        appData.splice(index, 1);
+        localStorage.setItem('appList', JSON.stringify(appData));
+        renderTable();
+      }
+    }
+
+    function editApp(index) {
+      const app = appData[index];
+      document.getElementById('appName').value = app.name;
+      document.getElementById('appDescription').value = app.description;
+      document.getElementById('appLink').value = app.link;
+      document.getElementById('createdDate').value = app.created;
+      document.getElementById('updatedDate').value = app.updated;
+      appData.splice(index, 1);
+      localStorage.setItem('appList', JSON.stringify(appData));
+      renderTable();
+    }
+
+    function sortTable(columnIndex) {
+      appData.sort((a, b) => {
+        const valA = Object.values(a)[columnIndex].toLowerCase();
+        const valB = Object.values(b)[columnIndex].toLowerCase();
+        return valA.localeCompare(valB);
+      });
+      localStorage.setItem('appList', JSON.stringify(appData));
+      renderTable();
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
