@@ -1,186 +1,172 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>アプリ登録とJSONエクスポート</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>アプリ登録フォーム</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f7f9fc;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #2c3e50;
+      font-family: sans-serif;
+      margin: 2rem;
+      background: #f0f0f0;
     }
     form {
-      display: flex;
-      flex-direction: column;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
       max-width: 600px;
-      margin: 0 auto 40px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
     }
-    label {
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    input, textarea {
-      padding: 10px;
-      font-size: 14px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    button {
-      margin-top: 20px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #2980b9;
+    input, button {
+      display: block;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem;
+      width: 100%;
+      font-size: 1rem;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      border-radius: 8px;
-      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
     }
     th, td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #eee;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
       text-align: left;
     }
     th {
-      background-color: #f0f2f5;
+      background: #eee;
+      cursor: pointer;
     }
-    .action-buttons button {
-      margin-right: 6px;
-      padding: 6px 10px;
-      font-size: 12px;
+    .actions button {
+      margin-right: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <h1>アプリ管理（登録＋JSON書き出し）</h1>
+  <h1>アプリ登録</h1>
   <form id="appForm">
-    <label>アプリ名:</label>
-    <input type="text" id="appName" required />
-
-    <label>説明:</label>
-    <textarea id="appDescription" required></textarea>
-
-    <label>リンクURL:</label>
-    <input type="url" id="appLink" required />
-
-    <label>作成日:</label>
-    <input type="date" id="createdDate" />
-
-    <label>更新日:</label>
-    <input type="date" id="updatedDate" />
-
-    <button type="submit">登録</button>
+    <input type="text" id="name" placeholder="アプリ名" required>
+    <input type="text" id="desc" placeholder="説明">
+    <input type="url" id="url" placeholder="URL" required>
+    <input type="date" id="created" placeholder="作成日">
+    <input type="date" id="updated" placeholder="更新日">
+    <input type="text" id="qr" placeholder="QRコード画像ファイル名（例: qrcodes/xxx.png）">
+    <button type="submit">追加</button>
   </form>
 
-  <div style="max-width: 1000px; margin: 0 auto;">
-    <button onclick="exportJSON()">📤 JSONファイルとして書き出し</button>
-    <table id="appTable">
-      <thead>
-        <tr>
-          <th>アプリ名</th>
-          <th>説明</th>
-          <th>リンク</th>
-          <th>作成日</th>
-          <th>更新日</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody id="appTableBody"></tbody>
-    </table>
-  </div>
+  <h2>登録済みアプリ</h2>
+  <table>
+    <thead>
+      <tr>
+        <th data-key="name">名前</th>
+        <th data-key="desc">説明</th>
+        <th data-key="url">URL</th>
+        <th data-key="created">作成日</th>
+        <th data-key="updated">更新日</th>
+        <th>QR</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody id="appTable"></tbody>
+  </table>
+  <button onclick="downloadJson()">apps.jsonを書き出す</button>
 
   <script>
-    const appForm = document.getElementById('appForm');
-    const appTableBody = document.getElementById('appTableBody');
-    let appData = JSON.parse(localStorage.getItem('appList') || '[]');
+    const form = document.getElementById("appForm");
+    const table = document.getElementById("appTable");
+    let data = JSON.parse(localStorage.getItem("apps") || "[]");
+    let sortKey = null;
+    let sortAsc = true;
 
-    function renderTable() {
-      appTableBody.innerHTML = '';
-      appData.forEach((app, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${app.name}</td>
-          <td>${app.description}</td>
-          <td><a href="${app.link}" target="_blank">開く</a></td>
-          <td>${app.created}</td>
-          <td>${app.updated}</td>
-          <td class="action-buttons">
-            <button onclick="editApp(${index})">編集</button>
-            <button onclick="deleteApp(${index})">削除</button>
+    function save() {
+      localStorage.setItem("apps", JSON.stringify(data));
+    }
+
+    function render() {
+      table.innerHTML = "";
+      data.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.name}</td>
+          <td>${row.desc}</td>
+          <td><a href="${row.url}" target="_blank">リンク</a></td>
+          <td>${row.created || ""}</td>
+          <td>${row.updated || ""}</td>
+          <td>${row.qr || ""}</td>
+          <td class="actions">
+            <button onclick="edit(${i})">編集</button>
+            <button onclick="remove(${i})">削除</button>
           </td>
         `;
-        appTableBody.appendChild(row);
+        table.appendChild(tr);
       });
     }
 
-    appForm.addEventListener('submit', e => {
+    form.onsubmit = e => {
       e.preventDefault();
-      const app = {
-        name: document.getElementById('appName').value,
-        description: document.getElementById('appDescription').value,
-        link: document.getElementById('appLink').value,
-        created: document.getElementById('createdDate').value || new Date().toISOString().split('T')[0],
-        updated: document.getElementById('updatedDate').value || new Date().toISOString().split('T')[0]
+      const item = {
+        name: form.name.value,
+        desc: form.desc.value,
+        url: form.url.value,
+        created: form.created.value,
+        updated: form.updated.value,
+        qr: form.qr.value
       };
-      appData.push(app);
-      localStorage.setItem('appList', JSON.stringify(appData));
-      appForm.reset();
-      renderTable();
-    });
+      data.push(item);
+      save();
+      render();
+      form.reset();
+    };
 
-    function deleteApp(index) {
-      if (confirm('本当に削除しますか？')) {
-        appData.splice(index, 1);
-        localStorage.setItem('appList', JSON.stringify(appData));
-        renderTable();
+    function edit(i) {
+      const item = data[i];
+      form.name.value = item.name;
+      form.desc.value = item.desc;
+      form.url.value = item.url;
+      form.created.value = item.created;
+      form.updated.value = item.updated;
+      form.qr.value = item.qr;
+      data.splice(i, 1);
+      save();
+      render();
+    }
+
+    function remove(i) {
+      if (confirm("削除しますか？")) {
+        data.splice(i, 1);
+        save();
+        render();
       }
     }
 
-    function editApp(index) {
-      const app = appData[index];
-      document.getElementById('appName').value = app.name;
-      document.getElementById('appDescription').value = app.description;
-      document.getElementById('appLink').value = app.link;
-      document.getElementById('createdDate').value = app.created;
-      document.getElementById('updatedDate').value = app.updated;
-      appData.splice(index, 1);
-      localStorage.setItem('appList', JSON.stringify(appData));
-      renderTable();
-    }
-
-    function exportJSON() {
-      const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+    function downloadJson() {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = 'apps.json';
+      a.download = "apps.json";
       a.click();
       URL.revokeObjectURL(url);
     }
 
-    renderTable();
+    document.querySelectorAll("th[data-key]").forEach(th => {
+      th.onclick = () => {
+        const key = th.dataset.key;
+        sortAsc = key === sortKey ? !sortAsc : true;
+        sortKey = key;
+        data.sort((a, b) => {
+          if (a[key] < b[key]) return sortAsc ? -1 : 1;
+          if (a[key] > b[key]) return sortAsc ? 1 : -1;
+          return 0;
+        });
+        render();
+      };
+    });
+
+    render();
   </script>
 </body>
 </html>
