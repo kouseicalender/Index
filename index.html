@@ -57,6 +57,9 @@
     <button type="submit">追加</button>
   </form>
 
+  <button onclick="downloadJson()">📥 apps.jsonを書き出す</button>
+  <button onclick="loadFromJson()">📤 apps.jsonから読み込む</button>
+
   <h2>登録済みアプリ</h2>
   <table>
     <thead>
@@ -72,7 +75,6 @@
     </thead>
     <tbody id="appTable"></tbody>
   </table>
-  <button onclick="downloadJson()">apps.jsonを書き出す</button>
 
   <script>
     const form = document.getElementById("appForm");
@@ -150,6 +152,15 @@
       a.download = "apps.json";
       a.click();
       URL.revokeObjectURL(url);
+    }
+
+    async function loadFromJson() {
+      const res = await fetch("apps.json");
+      const json = await res.json();
+      data = json;
+      save();
+      render();
+      alert("apps.json から復元しました！");
     }
 
     document.querySelectorAll("th[data-key]").forEach(th => {
