@@ -1,59 +1,66 @@
 [
   {
-    "name": "PDF全ページテキスト抽出",
-    "description": "PDFの全テキストを抽出する。とりあえず全文抽出する",
-    "link": "https://tkv0928.github.io/pdf-extractor-app/index.html",
-    "created": "2025-04-14",
-    "updated": "2025-04-14"
-  },
-  {
-    "name": "PDF名言整形表示ツール",
-    "description": "PDF名言整形表示ツール。名言だけにしぼって抽出。日本語、英語、出典の順に整えます。ただし星の説明などイレギュラーなページがあるため完璧な動作ができていません。",
-    "link": "https://kouseicalender.github.io/pdf-extractor-app2/",
-    "created": "2025-04-15",
-    "updated": "2025-04-15"
-  },
-  {
-    "name": "QRコードリーダー１",
-    "description": "QRコードリーダー基本版",
-    "link": "https://tkv0928.github.io/qr-reader/index.html",
-    "created": "2025-04-10",
-    "updated": "2025-04-11"
-  },
-  {
-    "name": "QRコードリーダー２",
-    "description": "ウェブアセンブラを使用した高速版",
-    "link": "https://kouseicalender.github.io/qr-reader/index.html",
-    "created": "2025-04-14",
-    "updated": "2025-04-15"
-  },
-  {
-    "name": "名言整理ウェブアプリ",
-    "description": "暦生活から支給された名言一覧のExcelファイルの日本語、英語、出典の列を抽出してソートするアプリ。PDFから抽出したテキストとの比較元作成に制作した",
-    "link": "https://kouseicalender.github.io/ex_spliter/index.html",
-    "created": "2025-04-15",
-    "updated": "2025-04-15"
-  },
-  {
-    "name": "HTML名言比較ツール",
-    "description": "アプリでPDFから抽出したページのhtmlと名言整理アプリでExcelからソートした月のhtmlを比較するアプリ",
-    "link": "https://kouseicalender.github.io/Html-Diff-Checker/index.html",
-    "created": "2025-04-14",
-    "updated": "2025-04-14"
-  },
-  {
-    "name": "Excelファイル差分比較（追加/削除シート＋セル内容差分）",
-    "description": "Excelの差分チェックツール。前シートの差分チェックします。",
-    "link": "https://kouseicalender.github.io/Excel_Match/index.html",
-    "created": "2025-04-15",
-    "updated": "2025-04-15"
-  },
-  {
     "name": "校正補助オーバーレイ",
     "desc": "資料を読み込んでその画像をオーバーレイ表示して視点移動を減らす",
     "url": "https://kouseicalender.github.io/Overlay_Checker/",
     "created": "2025-04-18",
     "updated": "2025-04-18",
     "qr": "touka_ck.png"
+  },
+  {
+    "name": "QRコードリーダー１",
+    "desc": "QRコードリーダー基本版",
+    "url": "https://tkv0928.github.io/qr-reader/index.html",
+    "created": "2025-04-10",
+    "updated": "2025-04-11",
+    "qr": "QR01.png"
+  },
+  {
+    "name": "QRコードリーダー２",
+    "desc": "ウェブアセンブラを使用した高速版",
+    "url": "https://kouseicalender.github.io/qr-reader/index.html",
+    "created": "2025-04-14",
+    "updated": "2025-04-15",
+    "qr": "QR02.png"
+  },
+  {
+    "name": "名言整理ウェブアプリ",
+    "desc": "暦生活から支給された名言一覧のExcelファイルの日本語、英語、出典の列を抽出してソートするアプリ。PDFから抽出したテキストとの比較元作成に制作した",
+    "url": "https://kouseicalender.github.io/ex_spliter/index.html",
+    "created": "2025-04-15",
+    "updated": "2025-04-15",
+    "qr": "Ex_spliter.png"
+  },
+  {
+    "name": "HTML名言比較ツール(htmlテキスト比較）",
+    "desc": "アプリでPDFから抽出したページのhtmlと名言整理アプリでExcelからソートした月のhtmlを比較するアプリ",
+    "url": "https://kouseicalender.github.io/Html-Diff-Checker/index.html",
+    "created": "2025-04-14",
+    "updated": "2025-04-14",
+    "qr": "Html_Diff.png"
+  },
+  {
+    "name": "Excelファイル差分比較（追加/削除シート＋セル内容差分）",
+    "desc": "Excelの差分チェックツール。前シートの差分チェックします。",
+    "url": "https://kouseicalender.github.io/Excel_Match/index.html",
+    "created": "2025-04-15",
+    "updated": "2025-04-15",
+    "qr": "Excel_Match.png"
+  },
+  {
+    "name": "PDF全ページテキスト抽出ツール",
+    "desc": "PDFの全テキストを抽出する。とりあえず全文抽出する",
+    "url": "https://tkv0928.github.io/pdf-extractor-app/index.html",
+    "created": "2025-04-14",
+    "updated": "2025-04-14",
+    "qr": "pdf-extractor.png"
+  },
+  {
+    "name": "PDF名言整形表示ツール",
+    "desc": "PDF名言整形表示ツール。名言だけにしぼって抽出。日本語、英語、出典の順に整えます。ただし星の説明などイレギュラーなページがあるため完璧な動作ができていません。",
+    "url": "https://kouseicalender.github.io/pdf-extractor-app2/",
+    "created": "2025-04-14",
+    "updated": "2025-04-14",
+    "qr": "pdf-extractor2.png"
   }
 ]
