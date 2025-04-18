@@ -47,5 +47,13 @@
     "link": "https://kouseicalender.github.io/Excel_Match/index.html",
     "created": "2025-04-15",
     "updated": "2025-04-15"
+  },
+  {
+    "name": "校正補助オーバーレイ",
+    "desc": "資料を読み込んでその画像をオーバーレイ表示して視点移動を減らす",
+    "url": "https://kouseicalender.github.io/Overlay_Checker/",
+    "created": "2025-04-18",
+    "updated": "2025-04-18",
+    "qr": "touka_ck.png"
   }
 ]
